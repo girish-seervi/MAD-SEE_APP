@@ -4,5 +4,10 @@
         "**/node_modules/**",
         "**/android/**/build/**"
     ],
-    "java.configuration.updateBuildConfiguration": "disabled"
+    "java.configuration.updateBuildConfiguration": "disabled",
+    "java.project.resourceFilters": [
+        "node_modules",
+        ".git",
+        ".expo"
+    ]
 }
