@@ -1,14 +1,23 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, StatusBar } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, StatusBar, Switch } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { COLORS, SIZES, SHADOWS, SPACING } from '../theme/theme';
 import { useAuth } from '../context/AuthContext';
+import { useContext } from 'react';
+import { ThemeContext } from '../context/ThemeContext';
 import { CustomButton, Card } from '../components/Common';
 import { User, Mail, Shield, ChevronRight, Bell, Moon, BookOpen, HelpCircle } from 'lucide-react-native';
 import Toast from 'react-native-toast-message';
 
 const ProfileScreen = () => {
     const { user, logout } = useAuth();
+    const { isDarkMode, toggleTheme } = useContext(ThemeContext);
+    const dynamicColors = {
+    background: isDarkMode ? "#121212" : "#FFFFFF",
+    card: isDarkMode ? "#1E1E1E" : "#FFFFFF",
+    text: isDarkMode ? "#FFFFFF" : "#000000",
+    subText: isDarkMode ? "#AAAAAA" : "#666666",
+};
     const insets = useSafeAreaInsets();
 
     const handleLogout = () => {
@@ -20,27 +29,34 @@ const ProfileScreen = () => {
         logout();
     };
 
-    const MenuItem = ({ icon: Icon, title, subtitle, onPress, color = COLORS.textPrimary }: any) => (
+    const MenuItem = ({ icon: Icon, title, subtitle, onPress }: any) => (
         <TouchableOpacity style={styles.menuItem} onPress={onPress}>
             <View style={styles.menuLeft}>
-                <View style={[styles.menuIconBox, { backgroundColor: COLORS.background }]}>
-                    <Icon size={20} color={color} />
+                <View style={[styles.menuIconBox, { backgroundColor: dynamicColors.card }]}>
+                    <Icon size={20} color={dynamicColors.text} />
                 </View>
                 <View>
-                    <Text style={[styles.menuTitle, { color }]}>{title}</Text>
-                    {subtitle && <Text style={styles.menuSubtitle}>{subtitle}</Text>}
+                    <Text style={[styles.menuTitle, { color: dynamicColors.text }]}>{title}</Text>
+                    {subtitle && <Text style={[styles.menuSubtitle, { color: dynamicColors.subText }]}>{subtitle}</Text>}
                 </View>
             </View>
-            <ChevronRight size={18} color={COLORS.textMuted} />
+            <ChevronRight size={18} color={dynamicColors.subText} />
         </TouchableOpacity>
     );
 
     return (
-        <View style={[styles.container, { paddingTop: insets.top }]}>
-            <StatusBar barStyle="dark-content" />
+<View style={[
+    styles.container, 
+    { 
+        paddingTop: insets.top,
+        backgroundColor: dynamicColors.background
+    }
+]}>            <StatusBar barStyle="dark-content" />
             <ScrollView showsVerticalScrollIndicator={false}>
-                <View style={styles.header}>
-                    <View style={styles.avatarContainer}>
+<View style={[
+    styles.header,
+    { backgroundColor: dynamicColors.card }
+]}>                    <View style={styles.avatarContainer}>
                         <View style={styles.avatar}>
                             <Text style={styles.avatarText}>{user?.name[0]}</Text>
                         </View>
@@ -48,8 +64,8 @@ const ProfileScreen = () => {
                             <Text style={styles.editBadgeText}>Edit</Text>
                         </TouchableOpacity>
                     </View>
-                    <Text style={styles.name}>{user?.name}</Text>
-                    <Text style={styles.email}>{user?.email}</Text>
+                   <Text style={[styles.name, { color: dynamicColors.text }]}>{user?.name}</Text>
+                   <Text style={[styles.email, { color: dynamicColors.subText }]}>{user?.email}</Text>
                     
                     <View style={styles.roleBadge}>
                         <Shield size={14} color={COLORS.primary} />
@@ -58,8 +74,8 @@ const ProfileScreen = () => {
                 </View>
 
                 <View style={styles.content}>
-                    <Text style={styles.sectionTitle}>Account Settings</Text>
-                    <Card style={styles.menuCard}>
+                    <Text style={[styles.sectionTitle, { color: dynamicColors.text }]}>Account Settings</Text>
+                    <Card style={[styles.menuCard, { backgroundColor: dynamicColors.card }]}>
                         <MenuItem 
                             icon={User} 
                             title="Personal Information" 
@@ -72,15 +88,22 @@ const ProfileScreen = () => {
                             subtitle="Alerts and reminders"
                         />
                         <View style={styles.menuDivider} />
-                        <MenuItem 
-                            icon={Moon} 
-                            title="Theme" 
-                            subtitle="Switch to Light or Dark mode"
-                        />
+                    <TouchableOpacity style={styles.menuItem}>
+                        <View style={styles.menuLeft}>
+                            <View style={[styles.menuIconBox, { backgroundColor: dynamicColors.card }]}>
+                                <Moon size={20} color={dynamicColors.text} />
+                            </View>
+                            <View>
+                                <Text style={[styles.menuTitle, { color: dynamicColors.text }]}>Theme</Text>
+                                <Text style={[styles.menuSubtitle, { color: dynamicColors.subText }]}>Switch to Light or Dark mode</Text>
+                            </View>
+                        </View>
+                        <Switch value={isDarkMode} onValueChange={toggleTheme} />
+                    </TouchableOpacity>
                     </Card>
 
-                    <Text style={styles.sectionTitle}>Support</Text>
-                    <Card style={styles.menuCard}>
+                    <Text style={[styles.sectionTitle, { color: dynamicColors.text }]}>Support</Text>
+                    <Card style={[styles.menuCard, { backgroundColor: dynamicColors.card }]}>
                         <MenuItem 
                             icon={BookOpen} 
                             title="Privacy Policy"

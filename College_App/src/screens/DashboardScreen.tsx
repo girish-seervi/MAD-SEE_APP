@@ -5,6 +5,8 @@ import { Home, CheckCircle, Clock, Users, ArrowRight, Calendar, BarChart3, Trend
 import { COLORS, SIZES, SHADOWS, SPACING } from '../theme/theme';
 import { Card, Skeleton } from '../components/Common';
 import { useAuth } from '../context/AuthContext';
+import { useContext } from 'react';
+import { ThemeContext } from '../context/ThemeContext';
 import { LineChart, PieChart } from 'react-native-chart-kit';
 import { adminApi, bookingApi } from '../api/api';
 import Toast from 'react-native-toast-message';
@@ -93,6 +95,14 @@ const DashboardScreen = ({ navigation }: { navigation: any }) => {
     const { user } = useAuth();
     const insets = useSafeAreaInsets();
     const role = user?.role || 'student';
+    const { isDarkMode } = useContext(ThemeContext);
+
+const dynamicColors = {
+    background: isDarkMode ? "#121212" : "#FFFFFF",
+    card: isDarkMode ? "#1E1E1E" : "#FFFFFF",
+    text: isDarkMode ? "#FFFFFF" : "#000000",
+    subText: isDarkMode ? "#AAAAAA" : "#666666",
+};
 
     const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
@@ -174,15 +184,18 @@ const DashboardScreen = ({ navigation }: { navigation: any }) => {
 
     const renderAdminDashboard = useCallback(() => (
         <>
-            <Text style={styles.dashboardTitle}>Dashboard</Text>
+            <Text style={[styles.dashboardTitle, { color: dynamicColors.text }]}>Dashboard</Text>
 
             <View style={styles.header}>
                 <View>
-                    <Text style={styles.welcomeText}>Welcome back,</Text>
-                    <Text style={styles.userName}>{user?.name.split(' ')[0] || 'User'} 👋</Text>
+                    <Text style={[styles.welcomeText, { color: dynamicColors.subText }]}>Welcome back,</Text>
+                    <Text style={[styles.userName, { color: dynamicColors.text }]}>{user?.name.split(' ')[0] || 'User'} 👋</Text>
                 </View>
                 <TouchableOpacity style={styles.profileBtn} onPress={navigateToProfile}>
-                    <View style={styles.avatarPlaceholder}>
+                    <View style={[
+  styles.avatarPlaceholder,
+  { backgroundColor: isDarkMode ? "#1E3A8A" : COLORS.primaryLight }
+]}>
                         <Text style={styles.avatarText}>{user?.name[0] || 'U'}</Text>
                     </View>
                 </TouchableOpacity>
@@ -205,35 +218,38 @@ const DashboardScreen = ({ navigation }: { navigation: any }) => {
                 </View>
             )}
 
-            <Text style={styles.sectionTitle}>Bookings Trend</Text>
+            <Text style={[styles.sectionTitle, { color: dynamicColors.text }]}>Bookings Trend</Text>
             {loading && !refreshing && !stats ? (
                 <ChartSkeleton height={200} />
             ) : (
-                <Card style={[styles.chartCard, { height: 200 }]}>
+                <Card style={[styles.chartCard, { height: 200, backgroundColor: dynamicColors.card }]}>
                     <BookingsTrendChart data={lineData} />
                 </Card>
             )}
 
             <View style={styles.adminExtraGrid}>
                 <View style={{ flex: 1.2 }}>
-                    <Text style={styles.sectionTitle}>Room Usage</Text>
+                    <Text style={[styles.sectionTitle, { color: dynamicColors.text }]}>Room Usage</Text>
                     {loading && !refreshing && !stats ? (
                         <ChartSkeleton height={210} />
                     ) : (
-                        <Card style={[styles.chartCard, { height: 210 }]}>
+                        <Card style={[styles.chartCard, { height: 210, backgroundColor: dynamicColors.card }]}>
                             <RoomUsagePieChart data={pieData} />
                         </Card>
                     )}
                 </View>
                 <View style={{ flex: 0.8, marginLeft: SPACING.md }}>
-                    <Text style={styles.sectionTitle}>System</Text>
-                    <TouchableOpacity style={styles.quickActionBtn}>
+                    <Text style={[styles.sectionTitle, { color: dynamicColors.text }]}>System</Text>
+                    <TouchableOpacity style={[
+  styles.quickActionBtn,
+  { backgroundColor: dynamicColors.card }
+]}>
                         <BarChart3 size={20} color={COLORS.primary} />
                         <Text style={styles.quickActionText}>Reports</Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.quickActionBtn}>
                         <Users size={20} color={COLORS.primary} />
-                        <Text style={styles.quickActionText}>Manage</Text>
+                        <Text style={[styles.quickActionText, { color: dynamicColors.text }]}>>Manage</Text>
                     </TouchableOpacity>
                 </View>
             </View>
@@ -242,12 +258,12 @@ const DashboardScreen = ({ navigation }: { navigation: any }) => {
 
     const renderStudentDashboard = useCallback(() => (
         <>
-            <Text style={styles.dashboardTitle}>Dashboard</Text>
+            <Text style={[styles.dashboardTitle, { color: dynamicColors.text }]}>Dashboard</Text>
 
-            <View style={styles.header}>
+<View style={[styles.header, { backgroundColor: dynamicColors.background }]}>
                 <View>
-                    <Text style={styles.welcomeText}>Welcome back,</Text>
-                    <Text style={styles.userName}>{user?.name.split(' ')[0] || 'User'} 👋</Text>
+                    <Text style={[styles.welcomeText, { color: dynamicColors.subText }]}>Welcome back,</Text>
+                    <Text style={[styles.userName, { color: dynamicColors.text }]}>{user?.name.split(' ')[0] || 'User'} 👋</Text>
                 </View>
                 <TouchableOpacity style={styles.profileBtn} onPress={navigateToProfile}>
                     <View style={styles.avatarPlaceholder}>
@@ -256,7 +272,10 @@ const DashboardScreen = ({ navigation }: { navigation: any }) => {
                 </TouchableOpacity>
             </View>
 
-            <View style={styles.mainCard}>
+        <View style={[
+  styles.mainCard,
+  { backgroundColor: isDarkMode ? "#1E3A8A" : COLORS.primary }
+]}>
                 <View style={styles.mainCardContent}>
                     <Text style={styles.mainCardLabel}>Ready to study?</Text>
                     <Text style={styles.mainCardValue}>Book a Room</Text>
@@ -270,36 +289,36 @@ const DashboardScreen = ({ navigation }: { navigation: any }) => {
                 </TouchableOpacity>
             </View>
 
-            <Text style={styles.sectionTitle}>Room Categories</Text>
+            <Text style={[styles.sectionTitle, { color: dynamicColors.text }]}>Room Categories</Text>
             <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.categoriesScroll}>
                 {['Lecture Halls', 'Computer Labs', 'Study Pods', 'Seminar Rooms'].map((cat, i) => (
                     <Card 
                         key={i} 
-                        style={styles.categoryCard}
+                        style={[styles.categoryCard, { backgroundColor: dynamicColors.card }]}
                         onPress={() => navigation.navigate('Rooms', { type: cat })}
                     >
                         <View style={styles.categoryIconBox}>
                             <Home size={24} color={COLORS.primary} />
                         </View>
-                        <Text style={styles.categoryText}>{cat}</Text>
+                        <Text style={[styles.categoryText, { color: dynamicColors.text }]}>{cat}</Text>
                     </Card>
                 ))}
             </ScrollView>
 
-            <Text style={styles.sectionTitle}>Upcoming Booking</Text>
+            <Text style={[styles.sectionTitle, { color: dynamicColors.text }]}>Upcoming Booking</Text>
             {loading && !refreshing ? (
-                <Card style={[styles.upcomingCard, { height: 80, justifyContent: 'center' }]}>
+                <Card style={[styles.upcomingCard, { height: 80, justifyContent: 'center', backgroundColor: dynamicColors.card }]}>
                     <ActivityIndicator size="small" color={COLORS.primary} />
                 </Card>
             ) : upcomingBooking ? (
-                <Card style={styles.upcomingCard} statusColor={COLORS.primary} onPress={navigateToBookings}>
+                <Card style={[styles.upcomingCard, { backgroundColor: dynamicColors.card }]} statusColor={COLORS.primary} onPress={navigateToBookings}>
                     <View style={styles.upcomingHeader}>
                         <View style={styles.upcomingIconBox}>
                             <Calendar size={20} color={COLORS.primary} />
                         </View>
                         <View>
-                            <Text style={styles.upcomingTitle}>Room {upcomingBooking.room_number}</Text>
-                            <Text style={styles.upcomingSub}>{new Date(upcomingBooking.booking_date).toDateString()}, {upcomingBooking.time_slot.split(' - ')[0]}</Text>
+                           <Text style={[styles.upcomingTitle, { color: dynamicColors.text }]}>Room {upcomingBooking.room_number}</Text>
+                            <Text style={[styles.upcomingSub, { color: dynamicColors.subText }]}>{new Date(upcomingBooking.booking_date).toDateString()}, {upcomingBooking.time_slot.split(' - ')[0]}</Text>
                         </View>
                     </View>
                     <View style={styles.statusBadge}>
@@ -308,8 +327,8 @@ const DashboardScreen = ({ navigation }: { navigation: any }) => {
                     </View>
                 </Card>
             ) : (
-                <Card style={styles.emptyUpcoming}>
-                    <Text style={styles.emptyUpcomingText}>No upcoming reservations.</Text>
+                <Card style={[styles.emptyUpcoming, { backgroundColor: dynamicColors.card }]}>
+                    <Text style={[styles.emptyUpcomingText, { color: dynamicColors.subText }]}>No upcoming reservations.</Text>
                     <TouchableOpacity onPress={navigateToRooms}>
                         <Text style={styles.bookNowText}>Book Now</Text>
                     </TouchableOpacity>
@@ -319,8 +338,13 @@ const DashboardScreen = ({ navigation }: { navigation: any }) => {
     ), [upcomingBooking, navigateToRooms, navigateToBookings, navigation, loading, refreshing, user, navigateToProfile]);
 
     return (
-        <View style={[styles.container, { paddingTop: insets.top }]}>
-            <StatusBar barStyle="dark-content" />
+<View style={[
+    styles.container,
+    {
+        paddingTop: insets.top,
+        backgroundColor: dynamicColors.background
+    }
+]}>           <StatusBar barStyle={isDarkMode ? "light-content" : "dark-content"} />
             <ScrollView 
                 contentContainerStyle={styles.scrollContent}
                 showsVerticalScrollIndicator={false}
