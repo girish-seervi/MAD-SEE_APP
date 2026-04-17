@@ -1,0 +1,8 @@
+{
+    "java.compile.nullAnalysis.mode": "automatic",
+    "java.import.exclusions": [
+        "**/node_modules/**",
+        "**/android/**/build/**"
+    ],
+    "java.configuration.updateBuildConfiguration": "disabled"
+}
